@@ -9,8 +9,9 @@ from requests import post
 from youtube_dl import YoutubeDL
 
 API_URL = "https://myfreemp3music.com/api/search.php"
-SONGS_FOLDER = "/Users/Moris/Desktop/Workout/"
-DOWNLOADED_SONG_FOLDER = "MyFreeMP3"
+DOWLOAD_URL = "https://speed.idmp3s.com/"
+SONGS_FOLDER = ""
+DOWNLOADED_SONG_FOLDER = ""
 
 
 def encryptD(number):
@@ -90,8 +91,8 @@ def get_download_link_first_song(songs_list):
     song = response[1]
     aid = song.get("id")
     oid = song.get("owner_id")
-    url = f"https://speed.idmp3s.com/{encryptD(oid)}:{encryptD(aid)}"
-    return song.get("title"), url
+    url = f"{DOWLOAD_URL}{encryptD(oid)}:{encryptD(aid)}"
+    return song.get("title"), song.get("artist"), url
 
 
 def download_audio(url, filename):
@@ -110,29 +111,35 @@ def main():
         query = sub(r"\(.*\)", "", sub(r"\[.*\]", "", query))
         # MyFreeMP3
         SPINNER.start(paint("Searching ", Color.WHITE) + paint(query, Color.BLUE))
-        for _ in range(5):
-            try:
+        try:
+            for _ in range(5):
                 song_list = get_songs_list(query)
-                title, url = get_download_link_first_song(song_list)
+                title, artist, url = get_download_link_first_song(song_list)
                 if url:
                     break
                 sleep(1)
-                if url:
-                    SPINNER.start(
-                        paint("Downloading ", Color.WHITE) + paint(title, Color.BLUE)
-                    )
-                    download_audio(
-                        url, path.join(SONGS_FOLDER, DOWNLOADED_SONG_FOLDER, query)
-                    )
-                    SPINNER.succeed(
-                        paint("Downloaded ", Color.WHITE) + paint(title, Color.BLUE)
-                    )
-                else:
-                    SPINNER.fail(
-                        paint("Error ", Color.WHITE) + paint(query, Color.BLUE)
-                    )
-            except Exception:
+            if url:
+                SPINNER.start(
+                    paint("Downloading ", Color.WHITE)
+                    + paint(query, Color.BLUE)
+                    + " ["
+                    + paint(f"{artist} - {title}", Color.RED)
+                    + "]"
+                )
+                download_audio(
+                    url, path.join(SONGS_FOLDER, DOWNLOADED_SONG_FOLDER, query)
+                )
+                SPINNER.succeed(
+                    paint("Downloaded ", Color.WHITE)
+                    + paint(query, Color.BLUE)
+                    + " ["
+                    + paint(f"{artist} - {title}", Color.RED)
+                    + "]"
+                )
+            else:
                 SPINNER.fail(paint("Error ", Color.WHITE) + paint(query, Color.BLUE))
+        except Exception:
+            SPINNER.fail(paint("Error ", Color.WHITE) + paint(query, Color.BLUE))
 
 
 if __name__ == "__main__":
