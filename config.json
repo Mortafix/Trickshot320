@@ -1,0 +1,13 @@
+{
+	"song-folder": "",
+	"downloaded-folder": "MyFreeMP3-Download",
+	"color": true,
+	"colors": {
+		"actions": "white",
+		"title-searching": "blue",
+		"song-found": "magenta"
+	},
+	"api-url": "https://myfreemp3music.com/api/search.php",
+	"download-url": "https://speed.idmp3s.com/",
+	"debug": false
+}
